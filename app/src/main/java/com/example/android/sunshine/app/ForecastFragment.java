@@ -193,11 +193,23 @@ public class ForecastFragment extends Fragment {
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
-            for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Forecast entry: " + s);
-            }
             return resultStrs;
 
+        }
+
+        @Override
+        protected void onPostExecute(String[] forecast) {
+            if (forecast != null) {
+                mForecastAdapter.clear();
+                for (String dayForecast : forecast) {
+                    mForecastAdapter.add(dayForecast);
+                }
+                /* mForecastAdapter.notifyDataSetChanged();
+                    There`s no need to use such method, because notify on change is set by default
+                    in ArrayAdapter.
+                    Refer to: setNotifyOnChange(boolean notifyOnChange)
+                 */
+            }
         }
 
         @Override
