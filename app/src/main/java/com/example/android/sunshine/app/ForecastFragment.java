@@ -31,8 +31,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -42,6 +40,7 @@ public class ForecastFragment extends Fragment {
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
     ArrayAdapter<String> mForecastAdapter;
+    String mUnit;
 
     public ForecastFragment() {
     }
@@ -107,6 +106,7 @@ public class ForecastFragment extends Fragment {
             /* Name of default shared preference file: context.getPackageName() + "_preferences" */
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String location = prefs.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+        mUnit = prefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_metric));
 
         weatherTask.execute(location);
     }
@@ -136,6 +136,11 @@ public class ForecastFragment extends Fragment {
          */
         private String formatHighLows(double high, double low) {
             // For presentation, assume the user doesn't care about tenths of a degree.
+            if (mUnit.equals(getString(R.string.pref_units_imperial))) {
+                high = (high * 1.8) + 32;
+                low = (low * 1.8) + 32;
+            }
+
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
 
