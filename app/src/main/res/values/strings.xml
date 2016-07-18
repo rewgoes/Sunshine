@@ -12,6 +12,6 @@
 
     <string name="pref_location_key" translatable="false">location</string>
     <string name="pref_location_title">Location</string>
-    <string name="pref_location_default" translatable="false">13070-752</string>
+    <string name="pref_location_default" translatable="false">13070&#8211;752</string>
 
 </resources>
