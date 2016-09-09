@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.sunshine.app;
+package com.wolfgoes.sunshine.app;
 
 import android.content.Intent;
 import android.os.Bundle;

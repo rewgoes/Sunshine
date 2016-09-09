@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "com.example.android.sunshine.app"
+        applicationId "com.wolfgoes.sunshine.app"
         minSdkVersion 10
         targetSdkVersion 24
         versionCode 1

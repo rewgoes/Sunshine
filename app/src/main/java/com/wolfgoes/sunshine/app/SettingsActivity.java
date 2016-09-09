@@ -1,4 +1,4 @@
-package com.example.android.sunshine.app;
+package com.wolfgoes.sunshine.app;
 
 import android.os.Bundle;
 import android.preference.ListPreference;
