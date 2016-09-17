@@ -252,11 +252,15 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
         if (params.length == 0) {
             return null;
         }
+        String locationQuery = params[0];
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
+
+        // Will contain the raw JSON response as a string.
+        String forecastJsonStr = null;
 
         String format = "json";
         String units = "metric";
@@ -310,11 +314,15 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                 // Stream was empty.  No point in parsing.
                 return null;
             }
+            forecastJsonStr = buffer.toString();
+            getWeatherDataFromJson(forecastJsonStr, locationQuery);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
             return null;
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

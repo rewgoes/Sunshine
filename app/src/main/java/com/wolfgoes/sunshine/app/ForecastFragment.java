@@ -6,6 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,9 +22,11 @@ import com.wolfgoes.sunshine.app.data.WeatherContract;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
+
+    private static final int FORECAST_LOADER = 0;
 
     ForecastAdapter mForecastAdapter;
     String mUnit;
@@ -75,6 +80,10 @@ public class ForecastFragment extends Fragment {
                 0
         );
 
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(0, null, this);
+
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
 //        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -93,10 +102,10 @@ public class ForecastFragment extends Fragment {
     public void updateWeather() {
         FetchWeatherTask weatherTask = new FetchWeatherTask(getContext());
 
-            /* getActivity().getPreferences(int mode) uses getActivity().getLocalClassName() as filename,
-             * which is not the name of the default shared preference */
+        /* getActivity().getPreferences(int mode) uses getActivity().getLocalClassName() as filename,
+        * which is not the name of the default shared preference */
 
-            /* Name of default shared preference file: context.getPackageName() + "_preferences" */
+        /* Name of default shared preference file: context.getPackageName() + "_preferences" */
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String location = prefs.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
         mUnit = prefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_metric));
@@ -110,4 +119,34 @@ public class ForecastFragment extends Fragment {
         updateWeather();
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String locationSetting = Utility.getPreferredLocation(getActivity());
+
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
+
+        return new CursorLoader(getActivity(),
+                weatherForLocationUri,
+                null,
+                null,
+                null,
+                sortOrder);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Swap the new cursor in.  (The framework will take care of closing the
+        // old cursor once we return.)
+        mForecastAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // This is called when the last Cursor provided to onLoadFinished()
+        // above is about to be closed.  We need to make sure we are no
+        // longer using it.
+        mForecastAdapter.swapCursor(null);
+    }
 }
