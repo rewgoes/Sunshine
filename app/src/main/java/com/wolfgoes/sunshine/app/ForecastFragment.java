@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -98,7 +99,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(LOG_TAG, "onActivityCreated");
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+        //When changing location settings and leaving the app, no weather information is shown whe opening the app again
+        updateWeather();
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -114,12 +118,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         mUnit = prefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_metric));
 
         weatherTask.execute(location);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateWeather();
     }
 
     @Override
@@ -151,5 +149,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         // above is about to be closed.  We need to make sure we are no
         // longer using it.
         mForecastAdapter.swapCursor(null);
+    }
+
+    public void onLocationChanged() {
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
     }
 }
