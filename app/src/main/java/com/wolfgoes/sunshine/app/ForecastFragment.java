@@ -30,8 +30,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
     private static final int FORECAST_LOADER = 0;
+    private static final String ITEM_SELECTED = "item_selected";
+
+    private int mItemSelected;
+    private ListView mListView;
 
     ForecastAdapter mForecastAdapter;
+
     String mUnit;
 
     /**
@@ -47,6 +52,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     public ForecastFragment() {
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (BuildConfig.DEBUG) Log.d(LOG_TAG, "onSaveInstanceState");
+        outState.putInt(ITEM_SELECTED, mItemSelected);
+        super.onSaveInstanceState(outState);
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -75,8 +87,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             final Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(LOG_TAG, "onCreateView");
+
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        if (savedInstanceState != null) {
+            mItemSelected = savedInstanceState.getInt(ITEM_SELECTED, mItemSelected);
+        }
 
         // The ArrayAdapter will take data from a source (like our dummy forecast) and
         // use it to populate the ListView it's attached to.
@@ -86,11 +104,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 0
         );
 
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(mForecastAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView = (ListView) rootView.findViewById(R.id.listview_forecast);
+        mListView.setAdapter(mForecastAdapter);
+        //TODO: select the first item when the app is opened listView.setSelection(mItemSelected);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView adapterView, View view, int position, long l) {
+                Log.d(LOG_TAG, "onItemClick");
+                mItemSelected = position;
+
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                 // if it cannot seek to that position.
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
@@ -111,8 +133,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(LOG_TAG, "onActivityCreated");
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
-        //When changing location settings and leaving the app, no weather information is shown whe opening the app again
-        updateWeather();
+        //TODO: When changing location settings and leaving the app, no weather information is shown when opening the app again
+        //updateWeather(); //TODO: this was causing bug
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -151,6 +173,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         // Swap the new cursor in.  (The framework will take care of closing the
         // old cursor once we return.)
         mForecastAdapter.swapCursor(data);
+        mListView.setItemChecked(mItemSelected, true);
+        mListView.smoothScrollToPosition(mItemSelected);
     }
 
     @Override
