@@ -38,6 +38,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     ForecastAdapter mForecastAdapter;
 
     String mUnit;
+    private boolean mUseTodayLayout;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -85,6 +86,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         return super.onOptionsItemSelected(item);
     }
 
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
+        if (mForecastAdapter != null)
+            mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
@@ -103,6 +110,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 null,
                 0
         );
+        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
 
         mListView = (ListView) rootView.findViewById(R.id.listview_forecast);
         mListView.setAdapter(mForecastAdapter);

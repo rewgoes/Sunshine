@@ -17,6 +17,8 @@ import com.wolfgoes.sunshine.app.data.WeatherContract;
  */
 public class ForecastAdapter extends CursorAdapter {
 
+    private boolean mUseTodayLayout;
+
     public ForecastAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
@@ -44,37 +46,18 @@ public class ForecastAdapter extends CursorAdapter {
         }
     }
 
-    /**
-     * Prepare the weather high/lows for presentation.
-     */
-    private String formatHighLows(double high, double low) {
-        boolean isMetric = Utility.isMetric(mContext);
-        String highLowStr = Utility.formatTemperature(mContext, high, isMetric) + "/" + Utility.formatTemperature(mContext, low, isMetric);
-        return highLowStr;
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
+        return position == 0 && mUseTodayLayout ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 
     @Override
     public int getViewTypeCount() {
         return VIEW_TYPE_COUNT;
-    }
-
-    /*
-        This is ported from FetchWeatherTask --- but now we go straight from the cursor to the
-        string.
-     */
-    private String convertCursorRowToUXFormat(Cursor cursor) {
-        String highAndLow = formatHighLows(
-                cursor.getDouble(WeatherContract.COL_WEATHER_MAX_TEMP),
-                cursor.getDouble(WeatherContract.COL_WEATHER_MIN_TEMP));
-
-        return Utility.formatDate(cursor.getLong(WeatherContract.COL_WEATHER_DATE)) +
-                " - " + cursor.getString(WeatherContract.COL_WEATHER_DESC) +
-                " - " + highAndLow;
     }
 
     /*
@@ -111,7 +94,7 @@ public class ForecastAdapter extends CursorAdapter {
 
         // TODO Read date from cursor
         long date = cursor.getLong(WeatherContract.COL_WEATHER_DATE);
-        holder.dateView.setText(Utility.getFriendlyDayString(mContext, date));
+        holder.dateView.setText(Utility.getFriendlyDayString(mContext, date, mUseTodayLayout));
 
         // TODO Read weather forecast from cursor
         String description = cursor.getString(WeatherContract.COL_WEATHER_DESC);
