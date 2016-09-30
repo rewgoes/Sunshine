@@ -114,7 +114,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         mListView = (ListView) rootView.findViewById(R.id.listview_forecast);
         mListView.setAdapter(mForecastAdapter);
-        //TODO: select the first item when the app is opened listView.setSelection(mItemSelected);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView adapterView, View view, int position, long l) {
