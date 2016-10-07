@@ -1,10 +1,9 @@
 package com.wolfgoes.sunshine.app;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -21,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.wolfgoes.sunshine.app.data.WeatherContract;
+import com.wolfgoes.sunshine.app.service.SunshineService;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -146,17 +146,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     public void updateWeather() {
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getContext());
-
-        /* getActivity().getPreferences(int mode) uses getActivity().getLocalClassName() as filename,
-        * which is not the name of the default shared preference */
-
-        /* Name of default shared preference file: context.getPackageName() + "_preferences" */
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String location = prefs.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-        mUnit = prefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_metric));
-
-        weatherTask.execute(location);
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+                Utility.getPreferredLocation(getActivity()));
+        getActivity().startService(intent);
     }
 
     @Override
