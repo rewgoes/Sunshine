@@ -1,5 +1,8 @@
 package com.wolfgoes.sunshine.app;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -37,7 +40,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     ForecastAdapter mForecastAdapter;
 
-    String mUnit;
     private boolean mUseTodayLayout;
 
     /**
@@ -146,10 +148,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     public void updateWeather() {
-        Intent intent = new Intent(getActivity(), SunshineService.class);
-        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
-                Utility.getPreferredLocation(getActivity()));
-        getActivity().startService(intent);
+        Context context = getContext();
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, SunshineService.AlarmReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        alarmMgr.set(AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + 5000, alarmIntent);
     }
 
     @Override
