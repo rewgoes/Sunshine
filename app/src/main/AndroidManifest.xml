@@ -50,14 +50,6 @@
                 android:value="com.wolfgoes.sunshine.app.MainActivity" />
         </activity>
 
-        <service
-            android:name=".service.SunshineService"
-            android:exported="false"></service>
-
-        <receiver
-            android:name=".service.SunshineService$AlarmReceiver"
-            android:enabled="true" />
-
         <!-- SyncAdapter's dummy authentication service -->
         <service android:name=".sync.SunshineAuthenticatorService">
             <intent-filter>
