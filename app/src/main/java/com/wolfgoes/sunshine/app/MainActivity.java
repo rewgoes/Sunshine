@@ -97,26 +97,9 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        } else if (id == R.id.action_location) {
-            openMyLocation();
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void openMyLocation() {
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String location = prefs.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-
-        String uri = String.format("geo:0,0?q=%s", location);
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(uri));
-
-        if (intent.resolveActivity(getPackageManager()) != null)
-            startActivity(intent);
-
     }
 
     @Override

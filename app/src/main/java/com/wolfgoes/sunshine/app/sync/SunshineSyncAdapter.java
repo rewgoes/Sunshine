@@ -140,6 +140,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             forecastJsonStr = buffer.toString();
             getWeatherDataFromJson(forecastJsonStr, location);
+
+            notifyWeather();
         } catch (IOException e) {
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
@@ -443,8 +445,6 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
                         WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
                         new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
-
-                notifyWeather();
             }
 
             Log.d(LOG_TAG, "SunshineService Complete. " + inserted + " Inserted");
