@@ -100,16 +100,13 @@ public class ForecastAdapter extends CursorAdapter {
         String description = cursor.getString(WeatherContract.COL_WEATHER_DESC);
         holder.descriptionView.setText(description);
 
-        // Read user preference for metric or imperial temperature units
-        boolean isMetric = Utility.isMetric(context);
-
         // Read high temperature from cursor
         double high = cursor.getDouble(WeatherContract.COL_WEATHER_MAX_TEMP);
-        holder.highTempView.setText(Utility.formatTemperature(mContext, high, isMetric));
+        holder.highTempView.setText(Utility.formatTemperature(mContext, high));
 
         // TODO Read low temperature from cursor
         double low = cursor.getDouble(WeatherContract.COL_WEATHER_MIN_TEMP);
-        holder.lowTempView.setText(Utility.formatTemperature(mContext, low, isMetric));
+        holder.lowTempView.setText(Utility.formatTemperature(mContext, low));
 
     }
 }
